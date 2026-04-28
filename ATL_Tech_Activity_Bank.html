@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATL Tech Activity Bank</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --thinking: #5B3FF5;
+    --thinking-light: #EEE9FF;
+    --thinking-mid: #A48DFA;
+    --research: #0F8A5F;
+    --research-light: #DFFAF0;
+    --research-mid: #4DC99A;
+    --communication: #D4560A;
+    --communication-light: #FFF0E6;
+    --communication-mid: #F5923F;
+    --selfmgmt: #1A7FC1;
+    --selfmgmt-light: #E3F3FF;
+    --selfmgmt-mid: #5DB3F0;
+    --social: #B5175A;
+    --social-light: #FFE8F2;
+    --social-mid: #E8669A;
+    --bg: #F7F5F0;
+    --card: #FFFFFF;
+    --text: #1A1A18;
+    --muted: #6B6B65;
+    --border: #E4E2DA;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--text);
+    color: #fff;
+    padding: 48px 40px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: 200px;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.03);
+  }
+  .header-tag {
+    display: inline-block;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 14px;
+  }
+  header h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+  header p {
+    font-size: 15px;
+    color: rgba(255,255,255,0.6);
+    max-width: 540px;
+    line-height: 1.6;
+  }
+  .stats-row {
+    display: flex;
+    gap: 32px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+  }
+  .stat {
+    text-align: left;
+  }
+  .stat-num {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .stat-label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.45);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 2px;
+  }
+
+  .controls {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 40px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .controls-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-right: 4px;
+  }
+
+  .cluster-tabs {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .tab {
+    padding: 7px 16px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    transition: all 0.18s ease;
+    background: var(--bg);
+    color: var(--muted);
+  }
+  .tab.all.active, .tab.all:hover { background: var(--text); color: #fff; border-color: var(--text); }
+  .tab[data-cluster="thinking"].active, .tab[data-cluster="thinking"]:hover { background: var(--thinking-light); color: var(--thinking); border-color: var(--thinking); }
+  .tab[data-cluster="research"].active, .tab[data-cluster="research"]:hover { background: var(--research-light); color: var(--research); border-color: var(--research); }
+  .tab[data-cluster="communication"].active, .tab[data-cluster="communication"]:hover { background: var(--communication-light); color: var(--communication); border-color: var(--communication); }
+  .tab[data-cluster="selfmgmt"].active, .tab[data-cluster="selfmgmt"]:hover { background: var(--selfmgmt-light); color: var(--selfmgmt); border-color: var(--selfmgmt); }
+  .tab[data-cluster="social"].active, .tab[data-cluster="social"]:hover { background: var(--social-light); color: var(--social); border-color: var(--social); }
+
+  .level-filter {
+    display: flex;
+    gap: 6px;
+    margin-left: auto;
+  }
+  .lvl-btn {
+    padding: 7px 14px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    transition: all 0.18s;
+  }
+  .lvl-btn.active { background: var(--text); color: #fff; border-color: var(--text); }
+  .lvl-btn:hover:not(.active) { border-color: var(--text); color: var(--text); }
+
+  .search-box {
+    padding: 7px 14px;
+    border-radius: 100px;
+    border: 1.5px solid var(--border);
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+    width: 180px;
+    transition: border-color 0.18s;
+  }
+  .search-box:focus { border-color: var(--text); }
+
+  main {
+    padding: 32px 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .cluster-section {
+    margin-bottom: 56px;
+  }
+  .cluster-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--border);
+  }
+  .cluster-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .cluster-title {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 700;
+  }
+  .cluster-count {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 100px;
+    margin-left: 4px;
+  }
+
+  .activities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+  }
+
+  .activity-card {
+    background: var(--card);
+    border-radius: 14px;
+    border: 1.5px solid var(--border);
+    padding: 20px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+  }
+  .activity-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+  }
+  .activity-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.09);
+  }
+  .activity-card[data-cluster="thinking"]::before { background: var(--thinking); }
+  .activity-card[data-cluster="research"]::before { background: var(--research); }
+  .activity-card[data-cluster="communication"]::before { background: var(--communication); }
+  .activity-card[data-cluster="selfmgmt"]::before { background: var(--selfmgmt); }
+  .activity-card[data-cluster="social"]::before { background: var(--social); }
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+  .sub-skill-tag {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 4px 9px;
+    border-radius: 100px;
+  }
+  .level-badge {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 100px;
+    background: var(--bg);
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .activity-num {
+    font-family: 'Fraunces', serif;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .activity-title {
+    font-family: 'Fraunces', serif;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.35;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+  .activity-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 14px;
+  }
+  .tools-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .tool-chip {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .time-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* Cluster-specific sub-skill tag colors */
+  [data-cluster="thinking"] .sub-skill-tag { background: var(--thinking-light); color: var(--thinking); }
+  [data-cluster="research"] .sub-skill-tag { background: var(--research-light); color: var(--research); }
+  [data-cluster="communication"] .sub-skill-tag { background: var(--communication-light); color: var(--communication); }
+  [data-cluster="selfmgmt"] .sub-skill-tag { background: var(--selfmgmt-light); color: var(--selfmgmt); }
+  [data-cluster="social"] .sub-skill-tag { background: var(--social-light); color: var(--social); }
+
+  .hidden { display: none !important; }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+    font-size: 15px;
+  }
+
+  .print-btn {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    background: var(--text);
+    color: #fff;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 100px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    transition: transform 0.15s;
+  }
+  .print-btn:hover { transform: scale(1.04); }
+
+  @media (max-width: 600px) {
+    header, main { padding: 24px 20px; }
+    .controls { padding: 12px 20px; }
+    .level-filter { margin-left: 0; }
+    .activities-grid { grid-template-columns: 1fr; }
+  }
+
+  @media print {
+    .controls, .print-btn { display: none; }
+    .activity-card { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-tag">ATL × Technology Integration</div>
+  <h1>ATL Tech<br>Activity Bank</h1>
+  <p>100 classroom-ready activities linking all 5 ATL skill clusters to specific digital tools — designed for IB teachers across all levels.</p>
+  <div class="stats-row">
+    <div class="stat"><div class="stat-num">100</div><div class="stat-label">Activities</div></div>
+    <div class="stat"><div class="stat-num">5</div><div class="stat-label">ATL Clusters</div></div>
+    <div class="stat"><div class="stat-num">3</div><div class="stat-label">Levels</div></div>
+    <div class="stat"><div class="stat-num">40+</div><div class="stat-label">Digital Tools</div></div>
+  </div>
+</header>
+
+<div class="controls">
+  <span class="controls-label">Filter:</span>
+  <div class="cluster-tabs">
+    <button class="tab all active" onclick="filterCluster('all')">All clusters</button>
+    <button class="tab" data-cluster="thinking" onclick="filterCluster('thinking')">Thinking</button>
+    <button class="tab" data-cluster="research" onclick="filterCluster('research')">Research</button>
+    <button class="tab" data-cluster="communication" onclick="filterCluster('communication')">Communication</button>
+    <button class="tab" data-cluster="selfmgmt" onclick="filterCluster('selfmgmt')">Self-management</button>
+    <button class="tab" data-cluster="social" onclick="filterCluster('social')">Social</button>
+  </div>
+  <div class="level-filter">
+    <button class="lvl-btn active" onclick="filterLevel('all')">All levels</button>
+    <button class="lvl-btn" onclick="filterLevel('Beginner')">Beginner</button>
+    <button class="lvl-btn" onclick="filterLevel('Intermediate')">Intermediate</button>
+    <button class="lvl-btn" onclick="filterLevel('Advanced')">Advanced</button>
+  </div>
+  <input class="search-box" type="text" placeholder="Search activities..." oninput="searchActivities(this.value)">
+</div>
+
+<main id="main"></main>
+
+<button class="print-btn" onclick="window.print()">⬇ Print / Save PDF</button>
+
+<script>
+const activities = [
+
+  // ─── THINKING SKILLS (20) ───────────────────────────────────────────────
+  { cluster:"thinking", subSkill:"Critical Thinking", level:"Beginner", title:"Claim vs. Evidence Sorter", desc:"Students receive a list of claims and evidence cards in Google Slides. They drag and match each evidence to a claim, colour-coding the strength of support.", tools:["Google Slides","Jamboard"], time:"30 min" },
+  { cluster:"thinking", subSkill:"Critical Thinking", level:"Intermediate", title:"Fake News Detective", desc:"Use NewsGuard or Common Sense Media to evaluate three online articles. Students complete a shared Google Doc rubric scoring credibility, bias, and evidence quality.", tools:["NewsGuard","Google Docs"], time:"45 min" },
+  { cluster:"thinking", subSkill:"Critical Thinking", level:"Advanced", title:"Socratic Seminar Dashboard", desc:"Run a structured Socratic seminar using Kialo Edu. Students post claims and counter-claims in a branching argument tree, then write a reflective exit slip.", tools:["Kialo Edu","Google Forms"], time:"60 min" },
+  { cluster:"thinking", subSkill:"Creative Thinking", level:"Beginner", title:"Random Word Remix", desc:"Students use a random word generator and connect it to a topic using Padlet's connection feature. They must explain the link — sparking lateral thinking.", tools:["Padlet","Random Word Gen"], time:"20 min" },
+  { cluster:"thinking", subSkill:"Creative Thinking", level:"Intermediate", title:"Design Sprint with Figma", desc:"Students tackle a school-based problem using a condensed Design Sprint. They brainstorm, sketch, and prototype a solution on FigJam whiteboards collaboratively.", tools:["FigJam","Figma"], time:"90 min" },
+  { cluster:"thinking", subSkill:"Creative Thinking", level:"Advanced", title:"AI Co-Creator Challenge", desc:"Students use an AI image/text tool to generate 5 creative starting points for a project, then critically evaluate and refine the outputs, explaining what they kept or discarded.", tools:["ChatGPT","Adobe Firefly","Google Docs"], time:"60 min" },
+  { cluster:"thinking", subSkill:"Transfer", level:"Beginner", title:"Cross-Subject Connection Map", desc:"Using MindMeister, students build a mind map showing how a concept from one subject connects to at least 3 other subject areas they study.", tools:["MindMeister"], time:"30 min" },
+  { cluster:"thinking", subSkill:"Transfer", level:"Intermediate", title:"Real-World Application Video", desc:"Students record a 90-second Flipgrid video explaining a classroom concept and a real-world situation where it applies — using screen share for visual support.", tools:["Flipgrid","Loom"], time:"40 min" },
+  { cluster:"thinking", subSkill:"Transfer", level:"Advanced", title:"Interdisciplinary Case Study", desc:"Groups use Notion to build a collaborative case study applying concepts from two different subject areas to solve a global issue, with clear documentation of their reasoning.", tools:["Notion","Google Slides"], time:"2 lessons" },
+  { cluster:"thinking", subSkill:"Reflection", level:"Beginner", title:"Thinking Emoji Exit Ticket", desc:"Using Google Forms, students select an emoji representing their thinking (confused, curious, confident) then write one sentence about why they chose it.", tools:["Google Forms"], time:"10 min" },
+  { cluster:"thinking", subSkill:"Reflection", level:"Intermediate", title:"Digital Learning Journal", desc:"Students maintain a recurring Seesaw journal post after each unit, responding to structured prompts about what shifted in their thinking and why.", tools:["Seesaw","Book Creator"], time:"15 min/week" },
+  { cluster:"thinking", subSkill:"Reflection", level:"Advanced", title:"Metacognitive Podcast Episode", desc:"Students record a short podcast on Anchor/Spotify for Education reflecting on their thinking process during a major project — identifying strategies, struggles, and breakthroughs.", tools:["Anchor","Spotify for Ed"], time:"45 min" },
+  { cluster:"thinking", subSkill:"Analysis", level:"Beginner", title:"Compare & Contrast Slides", desc:"Students use a split Google Slides template to analyse two sources, images, or texts side-by-side, using annotation tools to mark similarities and differences.", tools:["Google Slides","Kami"], time:"30 min" },
+  { cluster:"thinking", subSkill:"Analysis", level:"Intermediate", title:"Data Story with Charts", desc:"Students import a real dataset into Google Sheets, create 2–3 charts, and write an analysis paragraph for each — identifying trends, anomalies, and what questions remain.", tools:["Google Sheets","Datawrapper"], time:"60 min" },
+  { cluster:"thinking", subSkill:"Analysis", level:"Advanced", title:"Primary Source Deep Dive", desc:"Using Hypothesis annotation tool, students annotate a primary source document collaboratively, layering contextual and analytical comments, then debate interpretations in a Padlet wall.", tools:["Hypothesis","Padlet"], time:"60 min" },
+  { cluster:"thinking", subSkill:"Evaluation", level:"Beginner", title:"Rate the Website", desc:"Students use a guided Google Form checklist to evaluate a website — checking author, date, purpose, and evidence quality. Results are shared as a class gallery.", tools:["Google Forms","Google Sites"], time:"25 min" },
+  { cluster:"thinking", subSkill:"Evaluation", level:"Intermediate", title:"Peer Review Carousel", desc:"Students publish drafts on Padlet. Peers rotate through using sticky notes to evaluate strengths and areas for growth, using a shared ATL-linked rubric.", tools:["Padlet","Google Docs"], time:"40 min" },
+  { cluster:"thinking", subSkill:"Evaluation", level:"Advanced", title:"Argument Quality Audit", desc:"Students use Turnitin's peer review or Google Docs comments to audit each other's extended essays or research papers for logical fallacies, evidence strength, and coherence.", tools:["Turnitin","Google Docs"], time:"2 lessons" },
+  { cluster:"thinking", subSkill:"Problem Solving", level:"Intermediate", title:"Escape Room Logic Puzzle", desc:"Teacher builds a Breakout EDU digital room. Students must solve layered logic puzzles, document their reasoning steps in a shared doc, and reflect on their strategy.", tools:["Breakout EDU","Google Docs"], time:"50 min" },
+  { cluster:"thinking", subSkill:"Problem Solving", level:"Advanced", title:"Systems Thinking Simulation", desc:"Using Loopy (ncase.me/loopy), students model a complex system (e.g. climate, food chain, economy) by mapping cause-and-effect loops, then adjust variables and observe outcomes.", tools:["Loopy","Google Slides"], time:"60 min" },
+
+  // ─── RESEARCH SKILLS (20) ───────────────────────────────────────────────
+  { cluster:"research", subSkill:"Information Literacy", level:"Beginner", title:"Source Safari", desc:"Students use Common Sense Media's search guide to find 3 sources on a topic, then categorise each as primary, secondary, or tertiary on a shared Jamboard.", tools:["Jamboard","Common Sense Media"], time:"30 min" },
+  { cluster:"research", subSkill:"Information Literacy", level:"Intermediate", title:"CRAAP Test Digital Audit", desc:"Using a Google Slides template, students evaluate 5 web sources using the CRAAP criteria (Currency, Relevance, Authority, Accuracy, Purpose) and justify their ratings.", tools:["Google Slides","Google Search"], time:"45 min" },
+  { cluster:"research", subSkill:"Information Literacy", level:"Advanced", title:"Wikipedia Deconstruction Lab", desc:"Students trace a Wikipedia article's edit history, examine citations, identify biases, and write a 300-word evaluation of its reliability using Google Docs.", tools:["Wikipedia","Google Docs"], time:"60 min" },
+  { cluster:"research", subSkill:"Media Literacy", level:"Beginner", title:"Image Reverse Search Challenge", desc:"Students practice Google Reverse Image Search on a set of viral images, determining whether context has been misrepresented, and log findings in a shared spreadsheet.", tools:["Google Images","Google Sheets"], time:"25 min" },
+  { cluster:"research", subSkill:"Media Literacy", level:"Intermediate", title:"Deepfake Detection Workshop", desc:"Students watch clips on InVID / WeVerify and learn to spot manipulated media. They create a 'red flag checklist' collaboratively in Notion.", tools:["InVID","Notion"], time:"50 min" },
+  { cluster:"research", subSkill:"Media Literacy", level:"Advanced", title:"Framing Analysis Documentary", desc:"Students use Canva or WeVideo to create a short documentary comparing how two different media outlets frame the same story, analysing bias, tone, and visual choices.", tools:["Canva","WeVideo"], time:"3 lessons" },
+  { cluster:"research", subSkill:"Data Collection", level:"Beginner", title:"Google Forms Survey Design", desc:"Students design and deploy a short survey using Google Forms, then analyse the response data in Sheets — identifying patterns and outliers.", tools:["Google Forms","Google Sheets"], time:"40 min" },
+  { cluster:"research", subSkill:"Data Collection", level:"Intermediate", title:"Field Research with Apps", desc:"Students use Survey123 (ArcGIS) or KoboToolbox to collect real-world data on a local issue, map the results geographically, and present findings.", tools:["Survey123","ArcGIS Online"], time:"2 lessons" },
+  { cluster:"research", subSkill:"Data Collection", level:"Advanced", title:"API Data Pull Project", desc:"Advanced students use Google Sheets' IMPORTDATA or Flourish's data integration to pull live data from a public API (e.g. weather, economics) and build an analysis dashboard.", tools:["Google Sheets","Flourish"], time:"3 lessons" },
+  { cluster:"research", subSkill:"Citing & Referencing", level:"Beginner", title:"Citation Generator Race", desc:"Students use Citation Machine or EasyBib to generate citations for 5 given sources in MLA and APA. They compare outputs and identify differences in a Google Doc.", tools:["EasyBib","Google Docs"], time:"25 min" },
+  { cluster:"research", subSkill:"Citing & Referencing", level:"Intermediate", title:"Zotero Research Library", desc:"Students install Zotero, collect 8 sources during guided research, organise them by topic, and export a formatted bibliography into their research paper.", tools:["Zotero","Google Docs"], time:"45 min" },
+  { cluster:"research", subSkill:"Citing & Referencing", level:"Advanced", title:"Annotated Bibliography Builder", desc:"Using Zotero + Google Docs, students create an annotated bibliography for an extended research task, including a 2-sentence evaluation for each source.", tools:["Zotero","Google Docs"], time:"2 lessons" },
+  { cluster:"research", subSkill:"Note-taking", level:"Beginner", title:"Cornell Notes Digital Template", desc:"Students use a pre-built Google Docs Cornell Notes template to take notes from a video or reading, then write a 2-sentence summary in the bottom section.", tools:["Google Docs","YouTube"], time:"30 min" },
+  { cluster:"research", subSkill:"Note-taking", level:"Intermediate", title:"Sketchnoting in Concepts", desc:"Students use Concepts (iPad) or Microsoft Whiteboard to create visual sketchnotes during a lesson or documentary, blending drawing and text to capture key ideas.", tools:["Concepts App","MS Whiteboard"], time:"lesson length" },
+  { cluster:"research", subSkill:"Note-taking", level:"Advanced", title:"Zettelkasten Knowledge Network", desc:"Using Obsidian or Roam Research, students build a linked note system over a unit — connecting ideas across topics and identifying emerging themes.", tools:["Obsidian","Roam Research"], time:"ongoing" },
+  { cluster:"research", subSkill:"Synthesis", level:"Beginner", title:"Top 3 Takeaways Slide", desc:"After research, students create a single Google Slides summary slide: 3 key findings, 1 surprising thing, and 1 remaining question. Shared to a class deck.", tools:["Google Slides"], time:"20 min" },
+  { cluster:"research", subSkill:"Synthesis", level:"Intermediate", title:"Concept Map Research Summary", desc:"Students use MindMeister or Coggle to synthesise research from multiple sources into a visual concept map, linking ideas with labelled connections.", tools:["Coggle","MindMeister"], time:"45 min" },
+  { cluster:"research", subSkill:"Synthesis", level:"Advanced", title:"Literature Review in Notion", desc:"Students build a Notion database of sources, tagging each by theme, argument, and relevance. They then write a structured literature review using the database as scaffolding.", tools:["Notion","Google Docs"], time:"3 lessons" },
+  { cluster:"research", subSkill:"Inquiry Design", level:"Intermediate", title:"Question Formulation Technique", desc:"Using a Padlet wall, groups generate questions about a stimulus image or text using the QFT protocol, then categorise and prioritise questions collaboratively.", tools:["Padlet","Google Slides"], time:"40 min" },
+  { cluster:"research", subSkill:"Inquiry Design", level:"Advanced", title:"Research Proposal Screencast", desc:"Students design a full research inquiry plan and record a 3-minute Loom screencast presenting their question, methodology, and anticipated challenges.", tools:["Loom","Google Docs"], time:"2 lessons" },
+
+  // ─── COMMUNICATION SKILLS (20) ──────────────────────────────────────────
+  { cluster:"communication", subSkill:"Written Communication", level:"Beginner", title:"Sentence Expander with AI", desc:"Students use a writing assistant (like Grammarly or ChatGPT) to expand 5 bare-bones sentences, then evaluate and rewrite AI suggestions in their own voice.", tools:["Grammarly","Google Docs"], time:"30 min" },
+  { cluster:"communication", subSkill:"Written Communication", level:"Intermediate", title:"Audience-Adapted Writing", desc:"Students write the same piece of information twice — once for a peer, once for a parent — using Google Docs. They then analyse tone and vocabulary shifts between versions.", tools:["Google Docs","Hemingway App"], time:"45 min" },
+  { cluster:"communication", subSkill:"Written Communication", level:"Advanced", title:"Op-Ed Publishing Workflow", desc:"Students draft, peer-review, and refine an opinion piece using Google Docs commenting, then publish it as a formatted article on a class Google Site or Medium.", tools:["Google Docs","Google Sites"], time:"3 lessons" },
+  { cluster:"communication", subSkill:"Oral Communication", level:"Beginner", title:"Flipgrid 60-Second Explainer", desc:"Students record a 60-second Flipgrid video explaining a concept they've learned, focusing on clarity and pacing. Teacher gives video feedback using Flipgrid's annotation tool.", tools:["Flipgrid"], time:"20 min" },
+  { cluster:"communication", subSkill:"Oral Communication", level:"Intermediate", title:"Podcast Interview Pairs", desc:"Using Anchor or GarageBand, student pairs record a 3-minute interview on a curriculum topic — one as expert, one as journalist. Episodes are shared to a class feed.", tools:["Anchor","GarageBand"], time:"60 min" },
+  { cluster:"communication", subSkill:"Oral Communication", level:"Advanced", title:"TED-Style Talk with Teleprompter", desc:"Students craft and deliver a 5-minute TED-style talk. They use Canva for slides, a free teleprompter app for support, and record via Loom for self-review.", tools:["Canva","Loom","Teleprompter App"], time:"3 lessons" },
+  { cluster:"communication", subSkill:"Visual Communication", level:"Beginner", title:"Infographic Basics with Canva", desc:"Students choose 5 facts from a topic and represent them visually using Canva's infographic templates — focusing on hierarchy, colour contrast, and icon use.", tools:["Canva"], time:"40 min" },
+  { cluster:"communication", subSkill:"Visual Communication", level:"Intermediate", title:"Data Visualisation Story", desc:"Students use Flourish or Datawrapper to turn a raw dataset into an interactive visualisation, then write a 100-word caption explaining what the data shows.", tools:["Flourish","Datawrapper"], time:"60 min" },
+  { cluster:"communication", subSkill:"Visual Communication", level:"Advanced", title:"Motion Graphics Explainer", desc:"Students use Adobe Express or Canva's animated presentation feature to create a 60-second motion explainer on a complex concept, scripting and designing every frame.", tools:["Adobe Express","Canva"], time:"3 lessons" },
+  { cluster:"communication", subSkill:"Digital Communication", level:"Beginner", title:"Email Etiquette Simulator", desc:"Students are given 5 poorly written emails. Using Google Docs, they rewrite each one for professional tone, clarity, and structure using a provided checklist.", tools:["Google Docs"], time:"30 min" },
+  { cluster:"communication", subSkill:"Digital Communication", level:"Intermediate", title:"Collaborative Slide Deck Pitch", desc:"Groups co-create a persuasive pitch deck in Google Slides — assigning sections, using comments for feedback, and presenting live. Peer feedback collected via Google Forms.", tools:["Google Slides","Google Forms"], time:"2 lessons" },
+  { cluster:"communication", subSkill:"Digital Communication", level:"Advanced", title:"Multimodal Portfolio Website", desc:"Students build a personal portfolio on Google Sites or Wix, selecting and curating work samples across subjects and writing reflective captions for each.", tools:["Google Sites","Wix"], time:"ongoing" },
+  { cluster:"communication", subSkill:"Reading & Interpretation", level:"Beginner", title:"Annotation Relay on Kami", desc:"Students annotate a shared PDF on Kami in rounds — the first student highlights key ideas, the second adds questions, the third adds connections. Discussed as a class.", tools:["Kami"], time:"30 min" },
+  { cluster:"communication", subSkill:"Reading & Interpretation", level:"Intermediate", title:"Hypothesis Group Annotation", desc:"A class reads and annotates a complex text together using Hypothesis. Students must post at least 2 annotations and reply meaningfully to one peer.", tools:["Hypothesis"], time:"40 min" },
+  { cluster:"communication", subSkill:"Reading & Interpretation", level:"Advanced", title:"Contrapuntal Reading Task", desc:"Students annotate two opposing texts on Hypothesis simultaneously, using tags to compare arguments and mark where authors agree, disagree, or talk past each other.", tools:["Hypothesis","Google Docs"], time:"60 min" },
+  { cluster:"communication", subSkill:"Presenting", level:"Beginner", title:"Pecha Kucha with Google Slides", desc:"Students create a 20-slide, 20-seconds-per-slide Pecha Kucha presentation. Slides are mostly images. This forces them to prepare spoken content without reading notes.", tools:["Google Slides"], time:"2 lessons" },
+  { cluster:"communication", subSkill:"Presenting", level:"Intermediate", title:"Interactive Nearpod Lesson", desc:"Students become teachers — each group builds a 5-slide Nearpod lesson with polls, quizzes, and open questions, then delivers it to the class.", tools:["Nearpod"], time:"3 lessons" },
+  { cluster:"communication", subSkill:"Presenting", level:"Advanced", title:"Conference Panel Simulation", desc:"Groups simulate an academic panel discussion using Zoom breakout rooms. Each student presents a 3-minute position, then takes questions. Session recorded for reflection.", tools:["Zoom","Loom"], time:"2 lessons" },
+  { cluster:"communication", subSkill:"Language for Learning", level:"Intermediate", title:"Vocabulary in Context with Quizlet", desc:"Students create their own Quizlet set for key academic vocabulary — writing original example sentences in context, not definitions. Sets are shared across the class.", tools:["Quizlet"], time:"30 min" },
+  { cluster:"communication", subSkill:"Language for Learning", level:"Advanced", title:"Multilingual Concept Glossary", desc:"Students maintain a multilingual digital glossary in Notion or Google Sheets — adding terms in their home language alongside the language of instruction, with contextual notes.", tools:["Notion","Google Sheets"], time:"ongoing" },
+
+  // ─── SELF-MANAGEMENT SKILLS (20) ────────────────────────────────────────
+  { cluster:"selfmgmt", subSkill:"Organisation", level:"Beginner", title:"Digital Planner Setup", desc:"Students set up a personal weekly planner using Google Calendar — adding all assignments and deadlines for the term. Teacher checks via shared calendar.", tools:["Google Calendar"], time:"30 min" },
+  { cluster:"selfmgmt", subSkill:"Organisation", level:"Intermediate", title:"Notion Study Hub Build", desc:"Students design their personal study hub in Notion — including a task database, reading list, and weekly review template. They use it daily and share a screenshot reflection.", tools:["Notion"], time:"45 min" },
+  { cluster:"selfmgmt", subSkill:"Organisation", level:"Advanced", title:"GTD Digital System", desc:"Students implement a Getting Things Done (GTD) system using Todoist or Notion, capturing, clarifying, organising, and reflecting on tasks weekly over one term.", tools:["Todoist","Notion"], time:"ongoing" },
+  { cluster:"selfmgmt", subSkill:"Time Management", level:"Beginner", title:"Pomodoro Timer Challenge", desc:"Students use Tomato Timer to complete a task in two focused 25-minute blocks. They log in Google Forms what they completed each block and any distractions.", tools:["Tomato Timer","Google Forms"], time:"60 min" },
+  { cluster:"selfmgmt", subSkill:"Time Management", level:"Intermediate", title:"Project Gantt Chart", desc:"Students use a Google Sheets Gantt chart template to plan a multi-week project — mapping tasks, assigning time, and tracking completion weekly.", tools:["Google Sheets"], time:"45 min" },
+  { cluster:"selfmgmt", subSkill:"Time Management", level:"Advanced", title:"Time Audit and Redesign", desc:"Students track their time for one week using Toggl Track, then analyse patterns, identify inefficiencies, and write a reflection proposing a revised schedule.", tools:["Toggl Track","Google Docs"], time:"1 week + reflection" },
+  { cluster:"selfmgmt", subSkill:"Goal Setting", level:"Beginner", title:"SMART Goals Google Form", desc:"Students complete a scaffolded Google Form to write one SMART goal for the upcoming unit. Goals are reviewed mid-unit and at the end.", tools:["Google Forms"], time:"20 min" },
+  { cluster:"selfmgmt", subSkill:"Goal Setting", level:"Intermediate", title:"OKR Tracker in Sheets", desc:"Students set personal Objectives and Key Results (OKRs) for the term in a shared Google Sheet, updating progress bi-weekly and rating achievement.", tools:["Google Sheets"], time:"30 min + check-ins" },
+  { cluster:"selfmgmt", subSkill:"Goal Setting", level:"Advanced", title:"Personal Growth Portfolio", desc:"Using Seesaw or a personal Google Site, students document goals, evidence of progress, and reflections across the year — building a living portfolio of self-management.", tools:["Seesaw","Google Sites"], time:"ongoing" },
+  { cluster:"selfmgmt", subSkill:"Mindfulness & Wellbeing", level:"Beginner", title:"Digital Check-in with Mood Meter", desc:"Students complete a daily or weekly wellbeing check-in using a Google Forms mood meter. Teacher reviews anonymous trends and adjusts support.", tools:["Google Forms"], time:"5 min/day" },
+  { cluster:"selfmgmt", subSkill:"Mindfulness & Wellbeing", level:"Intermediate", title:"Headspace Reflection Journal", desc:"After a guided mindfulness session on Headspace or Calm, students write a structured reflection in Google Docs — identifying emotional states before/after.", tools:["Headspace","Google Docs"], time:"20 min" },
+  { cluster:"selfmgmt", subSkill:"Mindfulness & Wellbeing", level:"Advanced", title:"Stress Audit Presentation", desc:"Students research stress management strategies, create a personal stress audit using a Google Form, and present personalised strategies to a small group using Canva.", tools:["Google Forms","Canva"], time:"2 lessons" },
+  { cluster:"selfmgmt", subSkill:"Self-Regulation", level:"Beginner", title:"Traffic Light Self-Assessment", desc:"Using a Google Slides red/amber/green template, students rate their understanding of each lesson objective and write one action step for yellow or red.", tools:["Google Slides"], time:"10 min" },
+  { cluster:"selfmgmt", subSkill:"Self-Regulation", level:"Intermediate", title:"Error Analysis Tracker", desc:"Students create a Notion or Google Sheets tracker for recurring mistakes in their work. After each assessment, they log the error type and record the correction strategy.", tools:["Notion","Google Sheets"], time:"15 min/assessment" },
+  { cluster:"selfmgmt", subSkill:"Self-Regulation", level:"Advanced", title:"Distraction Audit and Fix", desc:"Students use Freedom or Cold Turkey to block distracting sites for one study week. They journal daily about focus quality and propose a digital environment design for optimal learning.", tools:["Freedom","Google Docs"], time:"1 week" },
+  { cluster:"selfmgmt", subSkill:"Study Skills", level:"Beginner", title:"Active Recall Flashcard Sprint", desc:"Students create Anki or Quizlet flashcards for a unit using active recall format (question on front, explanation on back). They track retention scores across sessions.", tools:["Anki","Quizlet"], time:"30 min" },
+  { cluster:"selfmgmt", subSkill:"Study Skills", level:"Intermediate", title:"Spaced Repetition Plan", desc:"Students set up an Anki deck and schedule using the spaced repetition algorithm. They review daily for 10 minutes over 3 weeks and track retention improvement.", tools:["Anki"], time:"10 min/day" },
+  { cluster:"selfmgmt", subSkill:"Study Skills", level:"Advanced", title:"Study Strategy Experiment", desc:"Students compare two study strategies (e.g. re-reading vs. retrieval practice) over two weeks, using Google Sheets to log sessions and quiz scores, and writing a data-backed conclusion.", tools:["Anki","Google Sheets","Google Docs"], time:"2 weeks" },
+  { cluster:"selfmgmt", subSkill:"Perseverance", level:"Intermediate", title:"Growth Mindset Tracker", desc:"Students log one challenge and one breakthrough per week in a shared Google Sheet or Seesaw portfolio — looking for patterns in how they respond to difficulty.", tools:["Google Sheets","Seesaw"], time:"10 min/week" },
+  { cluster:"selfmgmt", subSkill:"Perseverance", level:"Advanced", title:"Grit Reflection Documentary", desc:"Students use WeVideo to create a 2-minute personal documentary on a time they persevered through a challenge — linking to Carol Dweck's growth mindset research.", tools:["WeVideo","Google Docs"], time:"3 lessons" },
+
+  // ─── SOCIAL SKILLS (20) ─────────────────────────────────────────────────
+  { cluster:"social", subSkill:"Collaboration", level:"Beginner", title:"Shared Jamboard Build", desc:"Groups of 4 each get a Jamboard section to contribute ideas on a topic. They must build on each other's sticky notes and present the full board to the class.", tools:["Jamboard"], time:"30 min" },
+  { cluster:"social", subSkill:"Collaboration", level:"Intermediate", title:"Google Docs Version History Audit", desc:"After a collaborative writing task, students examine the Google Docs version history to reflect on contribution balance, quality of edits, and their collaborative process.", tools:["Google Docs"], time:"20 min" },
+  { cluster:"social", subSkill:"Collaboration", level:"Advanced", title:"Trello Project Sprint", desc:"Groups run a two-week project sprint using Trello — assigning tasks, tracking progress across columns, and holding a retrospective at the end to evaluate team dynamics.", tools:["Trello"], time:"2 weeks" },
+  { cluster:"social", subSkill:"Communication in Groups", level:"Beginner", title:"Roles in Google Meet", desc:"Students are assigned discussion roles (facilitator, devil's advocate, recorder) in a Google Meet breakout room. Roles rotate each session over one week.", tools:["Google Meet"], time:"20 min" },
+  { cluster:"social", subSkill:"Communication in Groups", level:"Intermediate", title:"Asynchronous Discussion Thread", desc:"Using Padlet's 'wall' format or a Google Classroom question, students engage in an asynchronous discussion — each post must add new information or a question.", tools:["Padlet","Google Classroom"], time:"ongoing" },
+  { cluster:"social", subSkill:"Communication in Groups", level:"Advanced", title:"Fishbowl Discussion on Zoom", desc:"An inner circle discusses while an outer circle observes and notes communication patterns using a shared Google Doc. Roles switch and patterns are debriefed.", tools:["Zoom","Google Docs"], time:"60 min" },
+  { cluster:"social", subSkill:"Giving & Receiving Feedback", level:"Beginner", title:"Two Stars and a Wish Padlet", desc:"Students post their work on a Padlet wall. Peers leave two sticky notes (strengths) and one wish (improvement area). Students read and respond to feedback received.", tools:["Padlet"], time:"30 min" },
+  { cluster:"social", subSkill:"Giving & Receiving Feedback", level:"Intermediate", title:"Structured Peer Review in Docs", desc:"Using a teacher-built Google Docs peer review template, students provide specific, criteria-referenced feedback on a peer's work — focusing on ATL-linked descriptors.", tools:["Google Docs"], time:"40 min" },
+  { cluster:"social", subSkill:"Giving & Receiving Feedback", level:"Advanced", title:"Turnitin Peer Review Cycle", desc:"Students complete a formal two-round peer review using Turnitin's peer review feature. Round 1 is structural; Round 2 is analytical. Both rounds are reflected upon.", tools:["Turnitin"], time:"2 lessons" },
+  { cluster:"social", subSkill:"Leadership", level:"Beginner", title:"Digital Role Assignment Board", desc:"Groups use a Canva poster or Google Slides team charter to formally assign roles (leader, recorder, timekeeper, presenter) and reflect on how each role went.", tools:["Canva","Google Slides"], time:"15 min" },
+  { cluster:"social", subSkill:"Leadership", level:"Intermediate", title:"Team Retrospective in Notion", desc:"After a project, groups run a structured retrospective in Notion — identifying what went well, what to improve, and individual contributions. Each member signs off.", tools:["Notion"], time:"30 min" },
+  { cluster:"social", subSkill:"Leadership", level:"Advanced", title:"Digital Action Project", desc:"Student leaders use Trello + Google Sites to design and manage a school-wide action project — planning tasks, delegating roles, documenting progress, and presenting outcomes.", tools:["Trello","Google Sites"], time:"term-long" },
+  { cluster:"social", subSkill:"Conflict Resolution", level:"Beginner", title:"Scenario Role Play Slides", desc:"Students are given 3 group conflict scenarios on Google Slides. In pairs, they annotate the best response strategy and share with the class in a gallery walk.", tools:["Google Slides"], time:"30 min" },
+  { cluster:"social", subSkill:"Conflict Resolution", level:"Intermediate", title:"Mediation Protocol Practice", desc:"Students use a structured online mediation protocol document in Google Docs, role-playing a group disagreement with assigned mediator and conflicting parties.", tools:["Google Docs","Google Meet"], time:"45 min" },
+  { cluster:"social", subSkill:"Conflict Resolution", level:"Advanced", title:"Real-World Negotiation Simulation", desc:"Groups simulate a negotiation on a real issue (e.g. resource allocation, policy change) using Zoom. Roles are assigned; students must reach consensus and document the agreement.", tools:["Zoom","Google Docs"], time:"2 lessons" },
+  { cluster:"social", subSkill:"Empathy & Perspective Taking", level:"Beginner", title:"Empathy Map in Jamboard", desc:"Students create a digital empathy map for a character, historical figure, or stakeholder — filling quadrants (says, thinks, feels, does) collaboratively on Jamboard.", tools:["Jamboard"], time:"30 min" },
+  { cluster:"social", subSkill:"Empathy & Perspective Taking", level:"Intermediate", title:"Perspective Switch Video", desc:"Using Flipgrid, students record a 90-second 'first person' video speaking as someone with a very different life experience or viewpoint from their own.", tools:["Flipgrid"], time:"40 min" },
+  { cluster:"social", subSkill:"Empathy & Perspective Taking", level:"Advanced", title:"Counter-Narrative Digital Story", desc:"Students research and create a short WeVideo documentary that amplifies a marginalised or underrepresented perspective on a curriculum topic.", tools:["WeVideo","Canva"], time:"3 lessons" },
+  { cluster:"social", subSkill:"Community & Action", level:"Intermediate", title:"Local Issue Action Site", desc:"Groups build a Google Site or Wix page highlighting a local community issue — including research, stakeholder interviews, and a call to action.", tools:["Google Sites","Wix"], time:"3 lessons" },
+  { cluster:"social", subSkill:"Community & Action", level:"Advanced", title:"Social Media Campaign for Change", desc:"Students design a responsible social media awareness campaign using Canva — planning content calendar, visual identity, and message strategy for a real school or community issue.", tools:["Canva","Google Sheets"], time:"term unit" },
+];
+
+const clusterColors = {
+  thinking: '#5B3FF5',
+  research: '#0F8A5F',
+  communication: '#D4560A',
+  selfmgmt: '#1A7FC1',
+  social: '#B5175A'
+};
+
+const clusterNames = {
+  thinking: 'Thinking Skills',
+  research: 'Research Skills',
+  communication: 'Communication Skills',
+  selfmgmt: 'Self-management Skills',
+  social: 'Social Skills'
+};
+
+let currentCluster = 'all';
+let currentLevel = 'all';
+let currentSearch = '';
+
+function render() {
+  const main = document.getElementById('main');
+  main.innerHTML = '';
+
+  const clusters = ['thinking','research','communication','selfmgmt','social'];
+  let totalVisible = 0;
+
+  clusters.forEach(cluster => {
+    if (currentCluster !== 'all' && currentCluster !== cluster) return;
+
+    const filtered = activities.filter(a => {
+      if (a.cluster !== cluster) return false;
+      if (currentLevel !== 'all' && a.level !== currentLevel) return false;
+      if (currentSearch) {
+        const q = currentSearch.toLowerCase();
+        return a.title.toLowerCase().includes(q) || a.desc.toLowerCase().includes(q) || a.subSkill.toLowerCase().includes(q) || a.tools.join(' ').toLowerCase().includes(q);
+      }
+      return true;
+    });
+
+    if (filtered.length === 0) return;
+    totalVisible += filtered.length;
+
+    const section = document.createElement('div');
+    section.className = 'cluster-section';
+
+    const header = document.createElement('div');
+    header.className = 'cluster-header';
+    header.innerHTML = `
+      <div class="cluster-dot" style="background:${clusterColors[cluster]}"></div>
+      <span class="cluster-title">${clusterNames[cluster]}</span>
+      <span class="cluster-count" style="background:${clusterColors[cluster]}1a;color:${clusterColors[cluster]}">${filtered.length} activities</span>
+    `;
+    section.appendChild(header);
+
+    const grid = document.createElement('div');
+    grid.className = 'activities-grid';
+
+    filtered.forEach((a, i) => {
+      const card = document.createElement('div');
+      card.className = 'activity-card';
+      card.setAttribute('data-cluster', cluster);
+
+      const allInCluster = activities.filter(x => x.cluster === cluster);
+      const num = allInCluster.indexOf(a) + 1;
+
+      card.innerHTML = `
+        <div class="card-top">
+          <span class="sub-skill-tag">${a.subSkill}</span>
+          <span class="level-badge">${a.level}</span>
+        </div>
+        <div class="activity-num">Activity ${num} of 20</div>
+        <div class="activity-title">${a.title}</div>
+        <div class="activity-desc">${a.desc}</div>
+        <div class="tools-row">${a.tools.map(t => `<span class="tool-chip">${t}</span>`).join('')}</div>
+        <div class="card-footer">
+          <span class="time-badge">⏱ ${a.time}</span>
+          <span style="color:${clusterColors[cluster]};font-weight:500">${a.subSkill}</span>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+
+    section.appendChild(grid);
+    main.appendChild(section);
+  });
+
+  if (totalVisible === 0) {
+    main.innerHTML = '<div class="empty-state">No activities match your filters. Try adjusting the cluster, level, or search term.</div>';
+  }
+}
+
+function filterCluster(c) {
+  currentCluster = c;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  if (c === 'all') document.querySelector('.tab.all').classList.add('active');
+  else document.querySelector(`.tab[data-cluster="${c}"]`).classList.add('active');
+  render();
+}
+
+function filterLevel(l) {
+  currentLevel = l;
+  document.querySelectorAll('.lvl-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  render();
+}
+
+function searchActivities(q) {
+  currentSearch = q;
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
